@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:PCP/AudioPage.dart';
 import 'package:PCP/SelectionerType.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'dart:ui' as ui;
 import 'package:image_picker/image_picker.dart';
@@ -13,6 +14,7 @@ class ImagesPage extends StatefulWidget {
 }
 
 class _ImagesPageState extends State<ImagesPage> {
+
   File _file1;
   File _file2;
   File _file3;
@@ -58,6 +60,18 @@ class _ImagesPageState extends State<ImagesPage> {
       body: Container(
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
+          // gradient: LinearGradient(
+          //   begin: Alignment.topCenter,
+          //   end: Alignment.bottomCenter,
+          //   stops: [
+          //     0.1,
+          //     0.9,
+          //   ],
+          //   colors: [
+          //     HexColor("#fe7600"),
+          //     Colors.white
+          //   ],
+          // ),
           image: DecorationImage(
             image: AssetImage("assets/background.jpg"),
             fit: BoxFit.cover,
@@ -69,13 +83,17 @@ class _ImagesPageState extends State<ImagesPage> {
               Container(
                 margin: EdgeInsets.only(top: 40.0, left: 20.0),
                 alignment: Alignment.centerLeft,
-                child: Text("Images",style: TextStyle(fontWeight: FontWeight.bold , fontSize: 20.0,color: Colors.white),
+                child: Text("Images",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold , fontSize: 20.0),
                 ),
               ),
               Container(
-                height: 120.0,
+                decoration: BoxDecoration(
+                  color: Colors.black45,
+                  borderRadius: BorderRadius.circular(10),
+                  //border: Border.all(color: Colors.black, width: 1.0),
+                ),
+                height: 150.0,
                 margin: EdgeInsets.all(10.0),
-
                 child: ListView.builder(
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
@@ -85,26 +103,54 @@ class _ImagesPageState extends State<ImagesPage> {
                     if(i == 0){
                       return Container(
                         child:  _file1 == null?
-                        Container(
-                        margin: EdgeInsets.all(5.0),
-                        width: 100.0,
-                        height: 100.0,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                          image: AssetImage("assets/empty1.jpg"),
-                          fit: BoxFit.cover,
-                        ),
-                          border: Border.all(color: Colors.black, width: 2.0),
-                        ),
+                        Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.all(5.0),
+                              width: 100.0,
+                              height: 120.0,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                begin: Alignment.topRight,
+                                end: Alignment.bottomLeft,
+                                stops: [
+                                  0.1,
+                                  0.9,
+                                ],
+                                colors: [
+                                  HexColor("#ffe263"),
+                                  //Colors.black
+                                  HexColor("#fe5000")
+                                ],
+                              ),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: Colors.white, width: 1.0),
+                              ),
+                              child: Icon(Icons.image, color: Colors.white,),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(right:40.0),
+                              child: Text("Image 1", style: TextStyle(color: Colors.white),),
+                            ),
+                          ],
                         ):
-                        Container(
-                          margin: EdgeInsets.all(5.0),
-                          width: 100.0,
-                          height: 100.0,
-                            child: Image.file(_file1,fit: BoxFit.cover,),
-                            decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black, width: 2.0),
-                          ),
+                        Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.all(5.0),
+                              width: 100.0,
+                              height: 120.0,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                border: Border.all(color: Colors.white, width: 1.0),
+                              ),
+                              child: ClipRRect(borderRadius: BorderRadius.circular(10.0),child: Image.file(_file1,fit: BoxFit.cover, )),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(right:40.0),
+                              child: Text("Image 1", style: TextStyle(color: Colors.white),),
+                            ),
+                          ],
                         ),
                       );
                     }
@@ -112,26 +158,53 @@ class _ImagesPageState extends State<ImagesPage> {
                     if(i == 1 ){
                       return Container(
                         child:  _file2 == null?
-                        Container(
-                        margin: EdgeInsets.all(5.0),
-                        width: 100.0,
-                        height: 100.0,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                          image: AssetImage("assets/empty1.jpg"),
-                          fit: BoxFit.cover,
-                        ),
-                          border: Border.all(color: Colors.black, width: 2.0),
-                        ),
+                        Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.all(5.0),
+                              width: 100.0,
+                              height: 120.0,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                begin: Alignment.topRight,
+                                end: Alignment.bottomLeft,
+                                stops: [
+                                  0.1,
+                                  0.9,
+                                ],
+                                colors: [
+                                  HexColor("#ffe263"),
+                                  HexColor("#fe5000")
+                                ],
+                              ),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: Colors.white, width: 1.0),
+                              ),
+                              child: Icon(Icons.image, color: Colors.white,),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(right:40.0),
+                              child: Text("Image 2", style: TextStyle(color: Colors.white),),
+                            ),
+                          ],
                         ):
-                        Container(
-                          margin: EdgeInsets.all(5.0),
-                          width: 100.0,
-                          height: 100.0,
-                            child: Image.file(_file2,fit: BoxFit.cover,),
-                            decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black, width: 2.0),
-                          ),
+                        Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.all(5.0),
+                              width: 100.0,
+                              height: 120.0,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                border: Border.all(color: Colors.white, width: 1.0),
+                              ),
+                              child: ClipRRect(borderRadius: BorderRadius.circular(10.0),child: Image.file(_file2,fit: BoxFit.cover, )),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(right:40.0),
+                              child: Text("Image 2", style: TextStyle(color: Colors.white),),
+                            ),
+                          ],
                         ),
                       );
                     }
@@ -139,26 +212,53 @@ class _ImagesPageState extends State<ImagesPage> {
                     if(i == 2 ){
                       return Container(
                         child:  _file3 == null?
-                        Container(
-                        margin: EdgeInsets.all(5.0),
-                        width: 100.0,
-                        height: 100.0,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                          image: AssetImage("assets/empty1.jpg"),
-                          fit: BoxFit.cover,
-                        ),
-                          border: Border.all(color: Colors.black, width: 2.0),
-                        ),
+                        Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.all(5.0),
+                              width: 100.0,
+                              height: 120.0,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                begin: Alignment.topRight,
+                                end: Alignment.bottomLeft,
+                                stops: [
+                                  0.1,
+                                  0.9,
+                                ],
+                                colors: [
+                                  HexColor("#ffe263"),
+                                  HexColor("#fe5000")
+                                ],
+                              ),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: Colors.white, width: 1.0),
+                              ),
+                              child: Icon(Icons.image, color: Colors.white,),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(right:40.0),
+                              child: Text("Image 3", style: TextStyle(color: Colors.white),),
+                            ),
+                          ],
                         ):
-                        Container(
-                          margin: EdgeInsets.all(5.0),
-                          width: 100.0,
-                          height: 100.0,
-                            child: Image.file(_file3,fit: BoxFit.cover,),
-                            decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black, width: 2.0),
-                          ),
+                        Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.all(5.0),
+                              width: 100.0,
+                              height: 120.0,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                border: Border.all(color: Colors.white, width: 1.0),
+                              ),
+                              child: ClipRRect(borderRadius: BorderRadius.circular(10.0),child: Image.file(_file3,fit: BoxFit.cover, )),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(right:40.0),
+                              child: Text("Image 3", style: TextStyle(color: Colors.white),),
+                            ),
+                          ],
                         ),
                       );
                     }
@@ -166,26 +266,53 @@ class _ImagesPageState extends State<ImagesPage> {
                     if(i == 3 ){
                       return Container(
                         child:  _file4 == null?
-                        Container(
-                        margin: EdgeInsets.all(5.0),
-                        width: 100.0,
-                        height: 100.0,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                          image: AssetImage("assets/empty1.jpg"),
-                          fit: BoxFit.cover,
-                        ),
-                          border: Border.all(color: Colors.black, width: 2.0),
-                        ),
+                        Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.all(5.0),
+                              width: 100.0,
+                              height: 120.0,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                begin: Alignment.topRight,
+                                end: Alignment.bottomLeft,
+                                stops: [
+                                  0.1,
+                                  0.9,
+                                ],
+                                colors: [
+                                  HexColor("#ffe263"),
+                                  HexColor("#fe5000")
+                                ],
+                              ),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: Colors.white, width: 1.0),
+                              ),
+                              child: Icon(Icons.image, color: Colors.white,),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(right:40.0),
+                              child: Text("Image 4", style: TextStyle(color: Colors.white),),
+                            ),
+                          ],
                         ):
-                        Container(
-                          margin: EdgeInsets.all(5.0),
-                          width: 100.0,
-                          height: 100.0,
-                            child: Image.file(_file4,fit: BoxFit.cover,),
-                            decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black, width: 2.0),
-                          ),
+                        Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.all(5.0),
+                              width: 100.0,
+                              height: 120.0,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                border: Border.all(color: Colors.white, width: 1.0),
+                              ),
+                              child: ClipRRect(borderRadius: BorderRadius.circular(10.0),child: Image.file(_file4,fit: BoxFit.cover, )),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(right:40.0),
+                              child: Text("Image 4", style: TextStyle(color: Colors.white),),
+                            ),
+                          ],
                         ),
                       );
                     }
@@ -193,26 +320,53 @@ class _ImagesPageState extends State<ImagesPage> {
                     if(i == 4 ){
                       return Container(
                         child:  _file5 == null?
-                        Container(
-                        margin: EdgeInsets.all(5.0),
-                        width: 100.0,
-                        height: 100.0,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                          image: AssetImage("assets/empty1.jpg"),
-                          fit: BoxFit.cover,
-                        ),
-                          border: Border.all(color: Colors.black, width: 2.0),
-                        ),
+                        Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.all(5.0),
+                              width: 100.0,
+                              height: 120.0,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                begin: Alignment.topRight,
+                                end: Alignment.bottomLeft,
+                                stops: [
+                                  0.1,
+                                  0.9,
+                                ],
+                                colors: [
+                                  HexColor("#ffe263"),
+                                  HexColor("#fe5000")
+                                ],
+                              ),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: Colors.white, width: 1.0),
+                              ),
+                              child: Icon(Icons.image, color: Colors.white,),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(right:40.0),
+                              child: Text("Image 5", style: TextStyle(color: Colors.white),),
+                            ),
+                          ],
                         ):
-                        Container(
-                          margin: EdgeInsets.all(5.0),
-                          width: 100.0,
-                          height: 100.0,
-                            child: Image.file(_file5,fit: BoxFit.cover,),
-                            decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black, width: 2.0),
-                          ),
+                        Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.all(5.0),
+                              width: 100.0,
+                              height: 120.0,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                border: Border.all(color: Colors.white, width: 1.0),
+                              ),
+                              child: ClipRRect(borderRadius: BorderRadius.circular(10.0),child: Image.file(_file5,fit: BoxFit.cover, )),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(right:40.0),
+                              child: Text("Image 5", style: TextStyle(color: Colors.white),),
+                            ),
+                          ],
                         ),
                       );
                     }
@@ -227,7 +381,7 @@ class _ImagesPageState extends State<ImagesPage> {
                     width: 200.0,
                     height: 200.0,
                     color: Colors.grey[300],
-                    child: DottedBorder(color: Colors.orange[900],
+                    child: DottedBorder(color: Colors.white,
                       radius: Radius.circular(10),
                       dashPattern: [6],
                         child: Center(
@@ -248,8 +402,8 @@ class _ImagesPageState extends State<ImagesPage> {
                       margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                       width: 200.0,
                       height: 200.0,
-                      color: Colors.white,
-                        child: DottedBorder(color: Colors.orange[900],
+                      color: Colors.black38,
+                        child: DottedBorder(color: Colors.white,
                           radius: Radius.circular(10),
                           dashPattern: [6],
                             child: Center(
@@ -257,9 +411,9 @@ class _ImagesPageState extends State<ImagesPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment:CrossAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.add_a_photo,size: 50,color: Colors.orange[900],
+                                  Icon(Icons.add_a_photo,size: 50,color: Colors.white,
                               ),
-                              Text("Ajouter"),
+                              Text("Ajouter", style: TextStyle(color: Colors.white),),
                               ],
                             ),
                           ),
@@ -278,11 +432,6 @@ class _ImagesPageState extends State<ImagesPage> {
                 child: RaisedButton.icon(
                   onPressed: () {
                     //_handleSubmitted();
-                    print(_file1);
-                    print(_file2);
-                    print(_file3);
-                    print(_file4);
-                    print(_file5);
                     Navigator.push(context, MaterialPageRoute(
                       builder:  (context) => AudioPage()),
                     );

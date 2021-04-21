@@ -1,5 +1,6 @@
 import 'package:PCP/ImagesPage.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class FirstPage extends StatefulWidget {
   @override
@@ -7,6 +8,29 @@ class FirstPage extends StatefulWidget {
 }
 
 class _FirstPageState extends State<FirstPage> {
+  checkLocationCamrea() async{
+    var microStatus = await Permission.microphone.status;
+    var cameraStatus = await Permission.camera.status;
+    var storageStatus = await Permission.storage.status;
+    print(microStatus);
+    print(cameraStatus);
+    print(storageStatus);
+    if(!microStatus.isGranted){
+      await Permission.microphone.request();
+    }
+    if(!cameraStatus.isGranted){
+      await Permission.camera.request();
+    }
+    if(!storageStatus.isGranted){
+      await Permission.storage.request();
+    } 
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    checkLocationCamrea();
+  }
   @override
   Widget build(BuildContext context) {
      return Container(

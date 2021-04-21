@@ -13,11 +13,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'SelectionerType.dart';
 
 class AudioPage extends StatefulWidget {
-  final File file1;
-  final File file2;
-  final File file3;
-  final File file4;
-  final File file5; 
+  final io.File file1;
+  final io.File file2;
+  final io.File file3;
+  final io.File file4;
+  final io.File file5; 
   final LocalFileSystem localFileSystem;
 
   AudioPage({localFileSystem,this.file1,this.file2,this.file3,this.file4,this.file5})
@@ -77,7 +77,7 @@ class _AudioPageState extends State<AudioPage> {
     } else {
       print('Some error occured in pausing');
     }
-  }
+  } 
 
   stopAudio() async {
     int response = await audioPlayer.stop();
@@ -271,12 +271,12 @@ class _AudioPageState extends State<AudioPage> {
                 height: 50.0,
                 child: RaisedButton.icon(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SelectionerType(widget.file1,widget.file2,widget.file3,widget.file4,widget.file5,file),
-                      ),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   // MaterialPageRoute(
+                    //   //   builder: (context) => SelectionerType(widget.file1,widget.file2,widget.file3,widget.file4,widget.file5,file),
+                    //   // ),
+                    // );
                   },
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(30.0))),
@@ -301,6 +301,7 @@ class _AudioPageState extends State<AudioPage> {
   }
 
   _start() async {
+    print("cccccc");
     try {
       if (await AudioRecorder.hasPermissions) {
         if (text != null && text != "") {
