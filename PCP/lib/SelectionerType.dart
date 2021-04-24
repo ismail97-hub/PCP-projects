@@ -6,49 +6,50 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class SelectionerType extends StatefulWidget {
-  // final File file1;
-  // final File file2;
-  // final File file3;
-  // final File file4;
-  // final File file5;
-  // final File audio; 
-  // SelectionerType(this.file1,this.file2,this.file3,this.file4,this.file5,this.audio);
+  final File file1;
+  final File file2;
+  final File file3;
+  final File file4;
+  final File file5;
+  final File audio; 
+  final File video;
+  SelectionerType(this.file1,this.file2,this.file3,this.file4,this.file5,this.audio,this.video);
   @override
   _SelectionerTypeState createState() => _SelectionerTypeState();
 }
 
 class _SelectionerTypeState extends State<SelectionerType> {
- // List<dynamic> listType;
+  List<dynamic> listType;
   List<int> idtypeschecked = List<int>();
-  // void loadtypes(){
-  //   String url = "http://192.168.1.30:8080/TypePanne";
-  //   http.get(url).then((resp) {
-  //     setState(() {
-  //       // this.listType = json.decode(utf8.decode(resp.bodyBytes));
-  //       _isChecked = List<bool>.filled(listType.length, false);
-  //       print(listType);
-  //     });
-  //   }).catchError((err) {
-  //     print(err);
-  //   });
-  // }
+  void loadtypes(){
+    String url = "http://192.168.1.30:8080/TypePanne";
+    http.get(url).then((resp) {
+      setState(() {
+         this.listType = json.decode(utf8.decode(resp.bodyBytes));
+        _isChecked = List<bool>.filled(listType.length, false);
+        print(listType);
+      });
+    }).catchError((err) {
+      print(err);
+    });
+  }
   
-  // int listtypelength(){
-  //   if(listType==null){
-  //     return 0;
-  //   }
-  //   else{
-  //     return listType.length;
-  //   }
-  // }
-  var listType = ['type A', 'type B', 'type C'];
+  int listtypelength(){
+    if(listType==null){
+      return 0;
+    }
+    else{
+      return listType.length;
+    }
+  }
+  // var listType = ['type A', 'type B', 'type C'];
   List<bool> _isChecked;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    // loadtypes();
-    _isChecked = List<bool>.filled(listType.length, false);
+     loadtypes();
+   // _isChecked = List<bool>.filled(listType.length, false);
     // print(widget.file1);
     // print(widget.file2);
     // print(widget.file3);
@@ -99,7 +100,7 @@ class _SelectionerTypeState extends State<SelectionerType> {
                           shrinkWrap: true,
                           padding: EdgeInsets.zero,
                           physics: ClampingScrollPhysics(),
-                          itemCount: listType.length,
+                          itemCount: listtypelength(),
                           itemBuilder: (context, index) {
                             return Row(
                               children: [
@@ -115,7 +116,7 @@ class _SelectionerTypeState extends State<SelectionerType> {
                                     });
                                   },
                                 ),
-                                Text(listType[index].toString(),style: TextStyle(fontWeight: FontWeight.bold),),
+                                Text(listType[index]["libelle"].toString(),style: TextStyle(fontWeight: FontWeight.bold),),
                               ],
                             );
                           },
@@ -134,15 +135,15 @@ class _SelectionerTypeState extends State<SelectionerType> {
                   onPressed: () {
                     //_handleSubmitted();
                     
-                    // print(_isChecked);
-                    // for (var i = 0; i < _isChecked.length; i++) {
-                    //   if(_isChecked[i]==true){
-                    //     idtypeschecked.add(listType[i]["idTypePanne"]);
-                    //   }
-                    // }
+                    print(_isChecked);
+                    for (var i = 0; i < _isChecked.length; i++) {
+                      if(_isChecked[i]==true){
+                        idtypeschecked.add(listType[i]["idTypePanne"]);
+                      }
+                    }
                     print(idtypeschecked);
                     Navigator.push(context, MaterialPageRoute(
-                      builder:  (context) => FinalPage()),
+                      builder:  (context) => FinalPage(widget.file1,widget.file2,widget.file3,widget.file4,widget.file5,widget.audio,widget.video,idtypeschecked)),
                     ); 
                   },
                   shape: RoundedRectangleBorder(

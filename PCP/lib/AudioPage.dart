@@ -18,9 +18,10 @@ class AudioPage extends StatefulWidget {
   final io.File file3;
   final io.File file4;
   final io.File file5; 
+  final io.File video;
   final LocalFileSystem localFileSystem;
 
-  AudioPage({localFileSystem,this.file1,this.file2,this.file3,this.file4,this.file5})
+  AudioPage({localFileSystem,this.file1,this.file2,this.file3,this.file4,this.file5,this.video})
       : this.localFileSystem = localFileSystem ?? LocalFileSystem();
   @override
   _AudioPageState createState() => _AudioPageState();
@@ -271,12 +272,25 @@ class _AudioPageState extends State<AudioPage> {
                 height: 50.0,
                 child: RaisedButton.icon(
                   onPressed: () {
-                    // Navigator.push(
-                    //   context,
-                    //   // MaterialPageRoute(
-                    //   //   builder: (context) => SelectionerType(widget.file1,widget.file2,widget.file3,widget.file4,widget.file5,file),
-                    //   // ),
-                    // );
+                    if(file==null){
+                      Fluttertoast.showToast(
+                        msg: "Prendre un audio svp !!!",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0);  
+                    }
+                    else{
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SelectionerType(widget.file1,widget.file2,widget.file3,widget.file4,widget.file5,file,widget.video),
+                      ),
+                    );
+                    }
+                    
                   },
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(30.0))),

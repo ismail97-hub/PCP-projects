@@ -10,7 +10,15 @@ import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 class FinalPage extends StatefulWidget {
-
+  final File file1;
+  final File file2;
+  final File file3;
+  final File file4;
+  final File file5;
+  final File audio; 
+  final File video;
+  final List<int> types;
+  FinalPage(this.file1,this.file2,this.file3,this.file4,this.file5,this.audio,this.video,this.types);
   @override
   _FinalPageState createState() => _FinalPageState();
 }
@@ -21,32 +29,44 @@ class _FinalPageState extends State<FinalPage> {
   TextEditingController descriptionController = new TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
-  
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print(widget.file1);
+    print(widget.file2);
+    print(widget.file3);
+    print(widget.file4);
+    print(widget.file5);
+    print(widget.audio);
+    print(widget.video);
+    print(widget.types);
+  }
   void _handleSubmitted() {
     final form = _formKey.currentState;
     if (!form.validate()) {
       print("Error here !!!! ");
     } else {
       form.save();
-      print(description);
-      showdialog(context);
-      Timer(Duration(seconds: 3), () {
-        Navigator.of(context).pop();
-        Fluttertoast.showToast(
-                        msg: "bien enregistré !!!",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM,
-                        timeInSecForIosWeb: 1,
-                        backgroundColor: Colors.red,
-                        textColor: Colors.white,
-                        fontSize: 16.0);
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => FirstPage()),
-          (Route<dynamic> route) => false,
-        );
-      });
-      // upload();
+      // print(description);
+      // showdialog(context);
+      // Timer(Duration(seconds: 3), () {
+      //   Navigator.of(context).pop();
+      //   Fluttertoast.showToast(
+      //                   msg: "bien enregistré !!!",
+      //                   toastLength: Toast.LENGTH_SHORT,
+      //                   gravity: ToastGravity.BOTTOM,
+      //                   timeInSecForIosWeb: 1,
+      //                   backgroundColor: Colors.red,
+      //                   textColor: Colors.white,
+      //                   fontSize: 16.0);
+      //   Navigator.pushAndRemoveUntil(
+      //     context,
+      //     MaterialPageRoute(builder: (context) => FirstPage()),
+      //     (Route<dynamic> route) => false,
+      //   );
+      // });
+       upload();
     }
   }
   showdialog(context) {
@@ -77,95 +97,102 @@ class _FinalPageState extends State<FinalPage> {
         });
   }
   String formattedDate = DateFormat('yyyy-MM-dd kk:mm').format(DateTime.now());
-  // Future upload() async {
-  //   String url= "http://192.168.1.30:8080/Panne/";
-  //   for (var i = 0; i < widget.types.length; i++) {
-  //     if(i==0){
-  //       url+=widget.types[i].toString(); 
-  //     }
-  //     else{
-  //       url+=","+widget.types[i].toString();
-  //     }
-  //   }
-  //   print(url);
-  //   var request = http.MultipartRequest(
-  //       "POST", Uri.parse(url));
-  //   Map<String, String> headers = {
-  //     'Content-Type': 'multipart/form-data',
-  //   };
+  Future upload() async {
+    String url= "http://192.168.1.30:8080/Panne/";
+    for (var i = 0; i < widget.types.length; i++) {
+      if(i==0){
+        url+=widget.types[i].toString(); 
+      }
+      else{
+        url+=","+widget.types[i].toString();
+      }
+    }
+    print(url);
+    var request = http.MultipartRequest(
+        "POST", Uri.parse(url));
+    Map<String, String> headers = {
+      'Content-Type': 'multipart/form-data',
+    };
 
-  //   request.headers["Content-Type"] = 'multipart/form-data';
-  //   request.files.add(
-  //     http.MultipartFile.fromBytes(
-  //       'panne',
-  //       utf8.encode(json.encode(<String, String>{
-  //         "description": descriptionController.text,
-  //         "date": formattedDate
-  //       })),
-  //       contentType: MediaType(
-  //         'application',
-  //         'json',
-  //         {'charset': 'utf-8'},
-  //       ),
-  //     ),
-  //   );
-  //   if (widget.file1 != null) {
-  //     request.files.add(http.MultipartFile.fromBytes(
-  //       "image1",
-  //       widget.file1.readAsBytesSync(),
-  //       filename: "test.${widget.file1.path.split(".").last}",
-  //     ));
-  //   }
-  //   if (widget.file2 != null) {
-  //     request.files.add(http.MultipartFile.fromBytes(
-  //       "image2",
-  //       widget.file2.readAsBytesSync(),
-  //       filename: "test.${widget.file2.path.split(".").last}",
-  //     ));
-  //   }
-  //   if (widget.file3 != null) {
-  //     request.files.add(http.MultipartFile.fromBytes(
-  //       "image3",
-  //       widget.file3.readAsBytesSync(),
-  //       filename: "test.${widget.file3.path.split(".").last}",
-  //     ));
-  //   }
-  //   if (widget.file4 != null) {
-  //     request.files.add(http.MultipartFile.fromBytes(
-  //       "image4",
-  //       widget.file4.readAsBytesSync(),
-  //       filename: "test.${widget.file4.path.split(".").last}",
-  //     ));
-  //   }
-  //   if (widget.file5 != null) {
-  //     request.files.add(http.MultipartFile.fromBytes(
-  //       "image5",
-  //       widget.file5.readAsBytesSync(),
-  //       filename: "test.${widget.file5.path.split(".").last}",
-  //     ));
-  //   }
-  //   if (widget.audio != null) {
-  //     request.files.add(http.MultipartFile.fromBytes(
-  //       "audio",
-  //       widget.audio.readAsBytesSync(),
-  //       filename: "test.${widget.audio.path.split(".").last}",
-  //     ));
-  //   }
-  //   showdialog(context);
-  //   request.send().then((onValue) {
-  //     print(onValue.statusCode);
-  //     if (onValue.statusCode == 200) {
-  //       Timer(Duration(seconds: 3), () {
-  //         Navigator.of(context).pop();
-  //         Navigator.pushAndRemoveUntil(
-  //           context,
-  //           MaterialPageRoute(builder: (context) => FirstPage()),
-  //           (Route<dynamic> route) => false,
-  //         );
-  //       });
-  //     }
-  //   });
-  // }
+    request.headers["Content-Type"] = 'multipart/form-data';
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        'panne',
+        utf8.encode(json.encode(<String, String>{
+          "description": descriptionController.text,
+          "date": formattedDate
+        })),
+        contentType: MediaType(
+          'application',
+          'json',
+          {'charset': 'utf-8'},
+        ),
+      ),
+    );
+    if (widget.file1 != null) {
+      request.files.add(http.MultipartFile.fromBytes(
+        "image1",
+        widget.file1.readAsBytesSync(),
+        filename: "test.${widget.file1.path.split(".").last}",
+      ));
+    }
+    if (widget.file2 != null) {
+      request.files.add(http.MultipartFile.fromBytes(
+        "image2",
+        widget.file2.readAsBytesSync(),
+        filename: "test.${widget.file2.path.split(".").last}",
+      ));
+    }
+    if (widget.file3 != null) {
+      request.files.add(http.MultipartFile.fromBytes(
+        "image3",
+        widget.file3.readAsBytesSync(),
+        filename: "test.${widget.file3.path.split(".").last}",
+      ));
+    }
+    if (widget.file4 != null) {
+      request.files.add(http.MultipartFile.fromBytes(
+        "image4",
+        widget.file4.readAsBytesSync(),
+        filename: "test.${widget.file4.path.split(".").last}",
+      ));
+    }
+    if (widget.file5 != null) {
+      request.files.add(http.MultipartFile.fromBytes(
+        "image5",
+        widget.file5.readAsBytesSync(),
+        filename: "test.${widget.file5.path.split(".").last}",
+      ));
+    }
+    if (widget.audio != null) {
+      request.files.add(http.MultipartFile.fromBytes(
+        "audio",
+        widget.audio.readAsBytesSync(),
+        filename: "test.${widget.audio.path.split(".").last}",
+      ));
+    }
+    if (widget.video != null) {
+      request.files.add(http.MultipartFile.fromBytes(
+        "video",
+        widget.video.readAsBytesSync(),
+        filename: "test.${widget.video.path.split(".").last}",
+      ));
+    }
+    showdialog(context);
+    request.send().then((onValue) {
+      print(onValue.statusCode);
+      if (onValue.statusCode == 200) {
+        Timer(Duration(seconds: 3), () {
+          Navigator.of(context).pop();
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => FirstPage()),
+            (Route<dynamic> route) => false,
+          );
+        });
+      }
+    });
+  }
 
 
   @override
@@ -257,7 +284,7 @@ class _FinalPageState extends State<FinalPage> {
                       borderRadius:
                           BorderRadius.all(Radius.circular(30.0))),
                   label: Text(
-                    'Suivant',
+                    'Envoyer',
                     style: TextStyle(color: Colors.white),
                   ),
                   icon: Icon(
