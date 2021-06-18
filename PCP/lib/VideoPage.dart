@@ -1,8 +1,9 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:PCP/ImagesPage.dart';
-import 'package:chewie/chewie.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,7 +19,6 @@ class VideoPage extends StatefulWidget {
 class _VideoPageState extends State<VideoPage> {
   File _path;
   VideoPlayerController _controller;
-  ChewieController chewieController;
 
   void _showPhotocamera() async {
     final myfile = await ImagePicker().getVideo(source: ImageSource.camera);
@@ -37,7 +37,7 @@ class _VideoPageState extends State<VideoPage> {
             //   fullScreenByDefault: true 
               
             // );  
-             Navigator.push(context, MaterialPageRoute(
+             Navigator.of(context).push(CupertinoPageRoute(
               builder:  (context) => AudioPage(video: _path,)),
              ); 
           });
@@ -45,6 +45,34 @@ class _VideoPageState extends State<VideoPage> {
         print(_controller);
         print(_path);
       });
+  }
+  showdialog(context) {
+    return showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            //title: Text("جاري وضع الاعلان ..."),
+            content: Container(
+              width: 100,
+              height: 100,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(top:15),
+                    child: CircularProgressIndicator(
+                      valueColor:
+                          new AlwaysStoppedAnimation<Color>(Colors.grey),
+                      strokeWidth: 2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
   }
   @override
   Widget build(BuildContext context) {
@@ -65,51 +93,57 @@ class _VideoPageState extends State<VideoPage> {
                 builder:  (context) => ImagesPage()),
               );
             },
-          )
+          ),
         ],
       ),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/bgv.png"),
-            fit: BoxFit.cover,
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/bgv.png"),
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        child:Column(
-          children: [
-            Container(
-              margin: EdgeInsets.only(right:40,top: 25),
-              width: 350,
-              height: 300,
-              child: Image.asset("assets/vdpng.png")
-            ),  
-            InkWell(
-                child: Container(
-                  margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
-                  width: 200.0,
-                  height: 200.0,
-                  color: Colors.black38,
-                    child: DottedBorder(color: Colors.white,
-                      radius: Radius.circular(10),
-                      dashPattern: [6],
-                        child: Center(
-                          child:Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment:CrossAxisAlignment.center,
-                            children: [
-                              Icon(Icons.video_call,size: 50,color: Colors.white,),
-                              Text("Ajouter", style: TextStyle(color: Colors.white),),
-                            ],
+          child:Column(
+            children: [
+             Container(
+                margin: EdgeInsets.only(top:20.0,bottom: 10),
+                width: 200.0,
+                height: 200.0,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/vdpng.png"),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ), 
+              Container(margin: EdgeInsets.only(bottom:20),child: Text("VIDEO",style: TextStyle(fontSize: 20,color: Colors.black,fontWeight: FontWeight.bold),)),
+              InkWell(
+                  child: DottedBorder(
+                    radius: Radius.circular(10),
+                    dashPattern: [6],
+                    color: Colors.black,
+                    child: Container(
+                      //margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
+                      width: 150.0,
+                      height: 150.0,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage("assets/plusimagepcp.png"),
+                          fit: BoxFit.cover,
                         ),
                       ),
-                    ),  
+                    ),
+                  ),
+                  onTap: (){
+                    showdialog(context);
+                    _showPhotocamera();
+                  },
                 ),
-                onTap: (){
-                  _showPhotocamera();
-                },
-              ),
-          ],
+                Center(child: Container(margin: EdgeInsets.only(top:10,bottom: 10),width: 150,height: 50,child:Image.asset("assets/loadingVideo.png")))
+            ],
+          ),
         ),
       ),
     );

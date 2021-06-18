@@ -1,5 +1,7 @@
 import 'package:PCP/ImagesPage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class FirstPage extends StatefulWidget {
@@ -33,26 +35,46 @@ class _FirstPageState extends State<FirstPage> {
   }
   @override
   Widget build(BuildContext context) {
-     return Container(
-      height: MediaQuery.of(context).size.height,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage("assets/background.jpg"),
-          fit: BoxFit.cover,
-        ),
+    // precacheImage(AssetImage('assets/AddVideo.png'),context); 
+    // precacheImage(AssetImage('assets/back.png'),context);
+    // precacheImage(AssetImage('assets/backaudio.png'),context);
+    // precacheImage(AssetImage('assets/backdesc.png'),context);
+    precacheImage(AssetImage('assets/backfirst.png'),context);
+    // precacheImage(AssetImage('assets/background.jpg'),context);
+    // precacheImage(AssetImage('assets/backimagepcp.png'),context);
+    // precacheImage(AssetImage('assets/backsimpledesc.png'),context);
+    // precacheImage(AssetImage('assets/bgST.png'),context);
+    // precacheImage(AssetImage('assets/bgv.png'),context);
+    // precacheImage(AssetImage('assets/empty1.jpg'),context);
+    // precacheImage(AssetImage('assets/imageempty.png'),context);
+    // precacheImage(AssetImage('assets/imagesimple2.png'),context);
+    // precacheImage(AssetImage('assets/loadingVideo.png'),context);
+    // precacheImage(AssetImage('assets/logoPCP.png'),context);
+    // precacheImage(AssetImage('assets/pause.png'),context);
+    // precacheImage(AssetImage('assets/play.png'),context);
+    // precacheImage(AssetImage('assets/plusimagepcp.png'),context);
+    // precacheImage(AssetImage('assets/stop.png'),context);
+    // precacheImage(AssetImage('assets/STpng.png'),context);
+    // precacheImage(AssetImage('assets/vdpng.png'),context);
+    return Scaffold(
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/backfirst.png"),
+            fit: BoxFit.cover,
+          ),
+        )
       ),
-      child: Center(
-        child: MaterialButton(
-          height: 200.0,
-          elevation: 10.0,
-          onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ImagesPage()));
+      floatingActionButton: Container(
+        height: 70.0,
+        width: 70.0,
+        child: FloatingActionButton(
+          onPressed: (){
+            Navigator.of(context).push(CupertinoPageRoute(builder: (context) => ImagesPage()));
           },
-          color: Colors.black38,
-          textColor: Colors.white,
-          child: Text("Ajoutez une panne", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),),
-          padding: EdgeInsets.all(16),
-          shape: CircleBorder(),
+          backgroundColor: HexColor("#F7931E"),
+          child: Center(child: Text(">", style: TextStyle(color: Colors.white, fontSize: 30.0),),),
         ),
       ),
     );

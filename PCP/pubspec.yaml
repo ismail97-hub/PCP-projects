@@ -29,16 +29,14 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   http:
   hexcolor:
-  image_picker: ^0.6.7+14
+  image_picker: 
   dotted_border:
   path_provider: 
-  audio_recorder: ^1.0.2
-  audioplayers: 
-  file_picker: 
+  audioplayers:
   fluttertoast: 
   permission_handler:
   video_player: 
-  chewie: 
+  record_mp3: ^2.1.0
 
 dev_dependencies:
   flutter_test:
@@ -67,8 +65,22 @@ flutter:
     - assets/logoPCP.png
     - assets/bgv.png
     - assets/vdpng.png
+    - assets/STpng.png
     - assets/AddVideo.png
     - assets/loadingVideo.png
+    - assets/bgST.png
+    - assets/backfirst.png
+    - assets/backimagepcp.png
+    - assets/imagesimple2.png
+    - assets/plusimagepcp.png
+    - assets/imageempty.png
+    - assets/backdesc.png
+    - assets/backsimpledesc.png
+    - assets/stop.png
+    - assets/play.png
+    - assets/backaudio.png
+    - assets/pause.png
+    - assets/back.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

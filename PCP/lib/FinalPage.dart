@@ -85,10 +85,13 @@ class _FinalPageState extends State<FinalPage> {
                 children: [
                   // Text("التحقق من صحة المعلومات"),
                   Center(child: Text("Enregistrement en cours ......")),
-                  CircularProgressIndicator(
-                    valueColor:
-                        new AlwaysStoppedAnimation<Color>(Colors.grey),
-                    strokeWidth: 2,
+                  Container(
+                    margin: EdgeInsets.only(top:15),
+                    child: CircularProgressIndicator(
+                      valueColor:
+                          new AlwaysStoppedAnimation<Color>(Colors.grey),
+                      strokeWidth: 2,
+                    ),
                   ),
                 ],
               ),
@@ -97,8 +100,31 @@ class _FinalPageState extends State<FinalPage> {
         });
   }
   String formattedDate = DateFormat('yyyy-MM-dd kk:mm').format(DateTime.now());
+  Future<http.Response> sendnotif() {
+    String bodyy = json.encode({
+      "subject": "Panne",
+      "content": "Une nouvelle panne est declarée",
+      "image":
+          "https://www.michiganradio.org/sites/michigan/files/styles/medium/public/202003/hanson-lu-sq5P00L7lXc-unsplash.jpg",
+      "data": {
+        "key1": "heelo",
+        "key2": "salam",
+        "key3": "kirak",
+        "key4": "Value 4"
+      }
+    });
+    print("body****");
+    print(bodyy);
+
+    return http.post(
+        'http://192.168.1.59:8060//send-notification',
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: bodyy);
+  }
   Future upload() async {
-    String url= "http://192.168.1.30:8080/Panne/";
+    String url= "http://192.168.1.59:8060/Panne/";
     for (var i = 0; i < widget.types.length; i++) {
       if(i==0){
         url+=widget.types[i].toString(); 
@@ -182,13 +208,35 @@ class _FinalPageState extends State<FinalPage> {
     request.send().then((onValue) {
       print(onValue.statusCode);
       if (onValue.statusCode == 200) {
+        sendnotif();
         Timer(Duration(seconds: 3), () {
           Navigator.of(context).pop();
+          Fluttertoast.showToast(
+                        msg: "bien enregistré !!!",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => FirstPage()),
             (Route<dynamic> route) => false,
           );
+        });
+      }
+      else{
+        Timer(Duration(seconds: 3), () {
+          Navigator.of(context).pop();
+          Fluttertoast.showToast(
+                        msg: "erreur d 'enregistrement !!!",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
         });
       }
     });
@@ -197,9 +245,9 @@ class _FinalPageState extends State<FinalPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+  return Scaffold(
       appBar: AppBar(
-        backgroundColor: HexColor("#fe7600"),
+        backgroundColor: HexColor("#F7931E"),
         title: Text("CONTROLE PCP",),
         elevation: 0.0,
       ),
@@ -207,28 +255,38 @@ class _FinalPageState extends State<FinalPage> {
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("assets/background.jpg"),
+            image: AssetImage("assets/backdesc.png"),
             fit: BoxFit.cover,
           ),
         ),
         child: SingleChildScrollView(
           child: Column(
             children: [
+              Container(
+                margin: EdgeInsets.only(top:20.0),
+                width: 200.0,
+                height: 200.0,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/backsimpledesc.png"),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                child: Text(
+                  "DESCRIPTION",
+                  style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold , fontSize: 20.0),
+                ),
+              ),
               //Description
               Form(
                 key: _formKey,
                 child: Container(
-                  margin: EdgeInsets.only(top:60.0, left: 10.0, right: 10.0),
+                  margin: EdgeInsets.only(top:20.0, left: 10.0, right: 10.0),
                   child: Column(
                     children: [
-                      Container(
-                        margin: EdgeInsets.only(top: 20.0, bottom: 10.0),
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Description",
-                          style: TextStyle(fontWeight: FontWeight.bold , fontSize: 20.0,color: Colors.white),
-                        ),
-                      ),
                       Container(
                         child: TextFormField(
                           onChanged: (text) {
@@ -261,43 +319,28 @@ class _FinalPageState extends State<FinalPage> {
                   ),
                 ),
               ),
-              // Button
-              Container(
-                margin: EdgeInsets.only(left: 10.0, right: 10.0, top: 30.0),
-                width: double.infinity,
-                height: 50.0,
-                child: RaisedButton.icon(
-                  onPressed: () {
-                    _handleSubmitted();
-                    // print(widget.types);
-                    // print(widget.file1);
-                    // print(widget.file2);
-                    // print(widget.file3);
-                    // print(widget.file4);
-                    // print(widget.file5);
-                    // print(widget.audio);
-                    print(descriptionController.text);
-                    print(formattedDate);
-
-                  },
-                  shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.all(Radius.circular(30.0))),
-                  label: Text(
-                    'Envoyer',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  icon: Icon(
-                    Icons.send,
-                    color: Colors.white,
-                  ),
-                  textColor: Colors.white,
-                  // color: HexColor("#318aff"),//blue
-                  color: Colors.black38,
-                ),
-              ),
             ],
           ),
+        ),
+      ),
+      floatingActionButton: Container(
+        height: 70.0,
+        width: 70.0,
+        child: FloatingActionButton(
+          onPressed: (){
+             _handleSubmitted();
+            print(widget.types);
+            print(widget.file1);
+            print(widget.file2);
+            print(widget.file3);
+            print(widget.file4);
+            print(widget.file5);
+            print(widget.audio);
+            print(descriptionController.text);
+            print(formattedDate);
+          },
+          backgroundColor: HexColor("#F7931E"),
+          child: Center(child: Text(">", style: TextStyle(color: Colors.white, fontSize: 30.0),),),
         ),
       ),
     );

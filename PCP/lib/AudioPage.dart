@@ -1,246 +1,297 @@
+import 'dart:async';
 import 'dart:io' as io;
-import 'dart:math';
-
-import 'package:audio_recorder/audio_recorder.dart';
+import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:file/file.dart';
 import 'package:file/local.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:record_mp3/record_mp3.dart';
 
 import 'SelectionerType.dart';
+
+// import 'SelectionerType.dart';
 
 class AudioPage extends StatefulWidget {
   final io.File file1;
   final io.File file2;
   final io.File file3;
   final io.File file4;
-  final io.File file5; 
+  final io.File file5;
   final io.File video;
-  final LocalFileSystem localFileSystem;
 
-  AudioPage({localFileSystem,this.file1,this.file2,this.file3,this.file4,this.file5,this.video})
-      : this.localFileSystem = localFileSystem ?? LocalFileSystem();
+  AudioPage({this.file1,this.file2,this.file3,this.file4,this.file5,this.video});
   @override
   _AudioPageState createState() => _AudioPageState();
 }
 
 class _AudioPageState extends State<AudioPage> {
- Recording _recording = new Recording();
-  bool _isRecording = false;
-  Random random = new Random();
-  TextEditingController _controller = new TextEditingController();
-  bool _isPlaying = false;
-  AudioPlayer audioPlayer;
-  String pathaudio;
-  var tr;
+  String statusText = "";
+  bool isComplete = false;
+  bool playaudio = false;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    audioPlayer = AudioPlayer();
+    // handleTick()
   }
 
-  bienenregestrer() {
-    Fluttertoast.showToast(
-        msg: "audio bien enregistrée",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0);
+  static const duration = const Duration(seconds: 1);
+
+  int secondsPassed = 0;
+  bool isActive = false;
+  bool disable = false;
+  File file;
+  Timer timer;
+
+  void handleTick() {
+    setState(() {
+      secondsPassed = secondsPassed + 1;
+      print(secondsPassed);
+    });
   }
 
-  deleteaudio(String path) {
-    final dir = io.Directory(path);
-    dir.deleteSync(recursive: true);
+  Future<bool> checkPermission() async {
+    if (!await Permission.microphone.isGranted) {
+      PermissionStatus status = await Permission.microphone.request();
+      if (status != PermissionStatus.granted) {
+        return false;
+      }
+    }
+    return true;
   }
 
-  playAudioFromLocalStorage(path) async {
-    int response = await audioPlayer.play(path, isLocal: true);
-    if (response == 1) {
-      // success
+  void startRecord() async {
+    bool hasPermission = await checkPermission();
+    if (hasPermission) {
+      statusText = "Recording...";
+      recordFilePath = await getFilePath();
 
+      isComplete = true;
+      RecordMp3.instance.start(recordFilePath, (type) {
+        statusText = "Record error--->$type";
+        setState(() {});
+      });
     } else {
-      print('Some error occured in playing from storage!');
+      statusText = "No microphone permission";
+    }
+    setState(() {});
+  }
+
+  String a;
+
+  void pauseRecord() {
+    if (RecordMp3.instance.status == RecordStatus.PAUSE) {
+      bool s = RecordMp3.instance.resume();
+      if (s) {
+        a = "resume";
+        statusText = "Recording...";
+        setState(() {});
+      }
+    } else {
+      bool s = RecordMp3.instance.pause();
+      if (s) {
+        a = "pause";
+        statusText = "Recording pause...";
+        setState(() {});
+      }
     }
   }
 
-  pauseAudio() async {
-    int response = await audioPlayer.pause();
-    if (response == 1) {
-      // success
-
-    } else {
-      print('Some error occured in pausing');
-    }
-  } 
-
-  stopAudio() async {
-    int response = await audioPlayer.stop();
-    if (response == 1) {
-      // success
-
-    } else {
-      print('Some error occured in stopping');
+  void stopRecord() {
+    bool s = RecordMp3.instance.stop();
+    if (s) {
+      isComplete = false;
+      setState(() {});
     }
   }
 
-  resumeAudio() async {
-    int response = await audioPlayer.resume();
-    if (response == 1) {
-      // success
-
-    } else {
-      print('Some error occured in resuming');
+  void resumeRecord() {
+    bool s = RecordMp3.instance.resume();
+    if (s) {
+      statusText = "Recording...";
+      setState(() {});
     }
+  }
+
+  String recordFilePath;
+  AudioPlayer audioPlayer = AudioPlayer();
+  void play() {
+    if (recordFilePath != null && File(recordFilePath).existsSync()) {
+      setState(() {
+        if (playaudio == false) {
+          playaudio = true;
+        }
+      });
+
+      audioPlayer.play(recordFilePath, isLocal: true);
+    }
+  }
+
+  int i = 0;
+
+  Future<String> getFilePath() async {
+    Directory storageDirectory = await getApplicationDocumentsDirectory();
+    String sdPath = storageDirectory.path + "/record";
+    var d = Directory(sdPath);
+    if (!d.existsSync()) {
+      d.createSync(recursive: true);
+    }
+    return sdPath + "/test_${i++}.mp3";
   }
 
   @override
   Widget build(BuildContext context) {
+    int seconds = secondsPassed % 60;
+    int minutes = secondsPassed ~/ 60;
     return Scaffold(
       appBar: AppBar(
         title: Text("CONTROLE PCP"),
-        backgroundColor: HexColor("#fe7600"),
-        elevation: 0.0,
+        backgroundColor: HexColor("#f7931e"),
+      ),
+      floatingActionButton: Container(
+        height: 70.0,
+        width: 70.0,
+        child: FloatingActionButton(
+          onPressed: () {
+            file = File(recordFilePath);
+            audioPlayer.pause();
+            print(file);
+            if (file == null) {
+              Fluttertoast.showToast(
+                  msg: "Prendre un audio svp !!!",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                  fontSize: 16.0);
+            } else {
+              Navigator.of(context).push(
+                CupertinoPageRoute(
+                  builder: (context) => SelectionerType(widget.file1,widget.file2,widget.file3,widget.file4,widget.file5,file,widget.video),
+                ),
+              );
+
+            }
+          },
+          backgroundColor: HexColor("#F7931E"),
+          child: Center(
+            child: Text(
+              ">",
+              style: TextStyle(color: Colors.white, fontSize: 30.0),
+            ),
+          ),
+        ),
       ),
       body: Container(
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("assets/background.jpg"),
+            image: AssetImage("assets/backaudio.png"),
             fit: BoxFit.cover,
           ),
         ),
         child: SingleChildScrollView(
           child: Column(
             children: [
+              Container(
+                height: 200,
+                width: MediaQuery.of(context).size.width,
+                child: Image.asset("assets/back.png"),
+              ),
               Center(
                 child: Container(
-                  margin: EdgeInsets.only(left: 20, right: 20, top: 70),
-                  decoration: new BoxDecoration(
-                    boxShadow: [
-                      new BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 10.0,
-                      ),
-                    ],
-                  ),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
+                  margin: EdgeInsets.only(left: 20, right: 20, top: 30),
+                  child: Container(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                            padding: EdgeInsets.only(
-                                right: 5.0, bottom: 2, top: 10, left: 5.0),
-                            child: Text(
-                              "Enregistrez l'audio",
-                              style: TextStyle(
-                                  color: Colors.orange[900],
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18),
-                            )),
-                        Divider(),
-                        Padding(
-                          padding: const EdgeInsets.all(18.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 5,
-                                  blurRadius: 7,
-                                  offset: Offset(
-                                      0, 3), // changes position of shadow
+                          padding:
+                              EdgeInsets.only(right: 5.0, left: 5.0, top: 5),
+                          child: Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    LabelText(
+                                        label: 'MIN',
+                                        value:
+                                            minutes.toString().padLeft(2, '0')),
+                                    LabelText(
+                                        label: 'SEC',
+                                        value: ":" +
+                                            seconds.toString().padLeft(2, '0')),
+                                  ],
                                 ),
                               ],
-                              color: HexColor("#fe7600"),
-                              borderRadius: BorderRadius.circular(10),
-                              // border: Border.all(
-                              //     color: Colors.orangeAccent, width: 2)
                             ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 18, right: 18, top: 20),
+                          child: Container(
                             child: Padding(
-                              padding: const EdgeInsets.all(18.0),
+                              padding: const EdgeInsets.only(
+                                  left: 18, right: 18, top: 18),
                               child: Row(
                                 children: [
                                   Expanded(
                                     flex: 1,
                                     child: MaterialButton(
                                       height: 50.0,
-                                      elevation: 10.0,
                                       onPressed: () {
-                                        if (_isRecording) {
-                                          _stop();
-                                          bienenregestrer();
-                                        }
+                                        stopRecord();
+                                        timer.cancel();
+                                        setState(() {
+                                          disable = false;
+                                        });
                                       },
-                                      // onPressed(){
-                                      //   _stop;
-                                      // },
-                                      color: Colors.black38,
-                                      textColor: Colors.white,
-                                      child: Icon(
-                                        Icons.stop,
-                                        size: 30,
-                                      ),
-                                      padding: EdgeInsets.all(10),
-                                      shape: CircleBorder(),
+                                      child: Image.asset("assets/pause.png"),
                                     ),
                                   ),
                                   Expanded(
                                     flex: 1,
                                     child: MaterialButton(
                                       height: 50.0,
-                                      elevation: 10.0,
                                       onPressed: () {
-                                        if (text != null) {
-                                          playAudioFromLocalStorage(text);
+                                        if (disable == false) {
+                                          setState(() {
+                                            play();
+                                            timer.cancel();
+                                          });
                                         }
                                       },
-                                      color: Colors.black38,
-                                      textColor: Colors.white,
-                                      child: Icon(
-                                        Icons.play_arrow,
-                                        size: 30,
-                                      ),
-                                      padding: EdgeInsets.all(10),
-                                      shape: CircleBorder(),
+                                      child: Image.asset("assets/play.png"),
                                     ),
                                   ),
                                   Expanded(
                                     flex: 1,
                                     child: MaterialButton(
                                       height: 50.0,
-                                      elevation: 10.0,
                                       onPressed: () {
-                                        Recording _recording = new Recording();
-                                        // text = null;
-                                        try {
-                                          if (text != null) {
-                                            _start();
-                                            deleteaudio(text);
+                                        if (disable == true) {
+                                          pauseRecord();
+                                          if (a == "pause") {
+                                            timer.cancel();
+                                          } else {
+                                            secondsPassed = secondsPassed;
+                                            timer = Timer.periodic(duration,
+                                                (Timer t) {
+                                              handleTick();
+                                            });
                                           }
-                                        } catch (e) {
-                                          print(e);
                                         }
                                       },
-                                      // onPressed: _isRecording ? null : _start,
-                                      color: Colors.black38,
-                                      textColor: Colors.white,
-                                      child: Icon(
-                                        Icons.replay,
-                                        size: 30,
-                                      ),
-                                      padding: EdgeInsets.all(10),
-                                      shape: CircleBorder(),
+                                      child: Image.asset("assets/stop.png"),
                                     ),
                                   ),
                                 ],
@@ -251,60 +302,38 @@ class _AudioPageState extends State<AudioPage> {
                         MaterialButton(
                           height: 150.0,
                           elevation: 10.0,
-                          onPressed: _isRecording ? null : _start,
-                          color: Colors.black38,
-                          textColor: Colors.white,
+                          onPressed: () {
+                            audioPlayer.pause();
+                            if (disable == false) {
+                              setState(() {
+                                audioPlayer = AudioPlayer();
+                                startRecord();
+                                disable = true;
+                                if (timer == null) {
+                                  timer = Timer.periodic(duration, (Timer t) {
+                                    handleTick();
+                                  });
+                                } else {
+                                  secondsPassed = 0;
+                                  timer = Timer.periodic(duration, (Timer t) {
+                                    handleTick();
+                                  });
+                                }
+                              });
+                            }
+                          },
+                          color: isComplete ? Colors.white : Colors.black12,
+                          textColor: isComplete ? Colors.black : Colors.white,
                           child: Icon(
                             Icons.mic_none_rounded,
                             size: 50,
                           ),
-                          padding: EdgeInsets.all(16),
+                          // padding: EdgeInsets.all(16),
                           shape: CircleBorder(),
                         ),
                       ],
                     ),
                   ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 15),
-                width: double.infinity,
-                height: 50.0,
-                child: RaisedButton.icon(
-                  onPressed: () {
-                    if(file==null){
-                      Fluttertoast.showToast(
-                        msg: "Prendre un audio svp !!!",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM,
-                        timeInSecForIosWeb: 1,
-                        backgroundColor: Colors.red,
-                        textColor: Colors.white,
-                        fontSize: 16.0);  
-                    }
-                    else{
-                      Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SelectionerType(widget.file1,widget.file2,widget.file3,widget.file4,widget.file5,file,widget.video),
-                      ),
-                    );
-                    }
-                    
-                  },
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(30.0))),
-                  label: Text(
-                    'Suivant',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  icon: Icon(
-                    Icons.send,
-                    color: Colors.white,
-                  ),
-                  textColor: Colors.white,
-                  // color: HexColor("#318aff"),//blue
-                  color: Colors.black38,
                 ),
               ),
             ],
@@ -313,52 +342,27 @@ class _AudioPageState extends State<AudioPage> {
       ),
     );
   }
+}
 
-  _start() async {
-    print("cccccc");
-    try {
-      if (await AudioRecorder.hasPermissions) {
-        if (text != null && text != "") {
-          String path = text;
-          pathaudio = _recording.path;
-          if (!text.contains('/')) {
-            io.Directory appDocDirectory =
-                await getApplicationDocumentsDirectory();
-            path = appDocDirectory.path + '/' + text;
-          }
-          print("Start recording: $path");
-          await AudioRecorder.start(
-              path: path, audioOutputFormat: AudioOutputFormat.AAC);
-        } else {
-          await AudioRecorder.start();
-        }
-        bool isRecording = await AudioRecorder.isRecording;
-        setState(() {
-          _recording = new Recording(duration: new Duration(), path: "");
-          _isRecording = isRecording;
-          print("_isRecording");
-          print(_isRecording);
-        });
-      } else {
-        Scaffold.of(context).showSnackBar(
-            new SnackBar(content: new Text("You must accept permissions")));
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-  File file;
-  String text;
-  _stop() async {
-    var recording = await AudioRecorder.stop();
-    print("Stop recording: ${recording.path}");
-    bool isRecording = await AudioRecorder.isRecording;
-    file = widget.localFileSystem.file(recording.path);
-    print("  File length: ${await file.length()}");
-    setState(() {
-      _recording = recording;
-      _isRecording = isRecording;
-    });
-    text = recording.path;
+class LabelText extends StatelessWidget {
+  LabelText({this.label, this.value = null});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(
+            '$value',
+            style: TextStyle(
+                color: Colors.black, fontSize: 30, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
   }
 }
